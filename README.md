@@ -34,7 +34,7 @@ The students edit this section to add their names, Uniandes emails, and specify 
 
 1. Andres Huertas, 202420560 <a.huertasl@uniandes.edu.co> 
 2. Maria Alejandra Cortes, 202422247  <m.cortesz@uniandes.edu.co>
-3. Inti Zamir Cruz, Student No. 3 <i.cruzy@uniandes.edu.co>
+3. Inti Zamir Cruz, 202410363 <i.cruzy@uniandes.edu.co>
 
 [Back to top](#retos-template)
 
