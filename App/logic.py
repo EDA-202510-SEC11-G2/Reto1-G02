@@ -1,14 +1,50 @@
 import time
 import csv
+import os 
+from DataStructures import array_list as lt
+
 
 csv.field_size_limit(2147483647)
+
+data_dir = os.path.dirname(os.path.realpath('file')) + '/Data/' + '/agricultural-20.csv'
+
 
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
     #TODO: Llama a las funciónes de creación de las estructuras de datos
-    pass
+    
+    catalog = {
+        "source": None,
+        "commodity": None,
+        "statical_category": None,
+        "unit_measurement": None,
+        "state_name": None,
+        "location": None,
+        "year_collection": None,
+        "freq_collection": None,
+        "reference_period":None,
+        "load_time": None,
+        "value": None,
+        
+    }
+    
+    catalog["source"] = lt.new_list()
+    catalog["commodity"] = lt.new_list()
+    catalog["statical_category"] = lt.new_list()
+    catalog["unit_measurement"] = lt.new_list()
+    catalog["state_name"] = lt.new_list()
+    catalog["location"] = lt.new_list()
+    catalog["year_collection"] = lt.new_list()
+    catalog["freq_collection"] = lt.new_list()
+    catalog["reference_period"] = lt.new_list()
+    catalog["load_time"] = lt.new_list()
+    catalog["value"] = lt.new_list()
+    
+
+    return catalog
+    
 
 
 # Funciones para la carga de datos
@@ -18,6 +54,14 @@ def load_data(catalog, filename):
     Carga los datos del reto
     """
     # TODO: Realizar la carga de datos
+    
+    for i in catalog:
+        elements = catalog[i]
+        element_file = os.path.join(data_dir, filename)
+        catalog[i] = lt.load_list(elements, element_file)
+        
+    return elements   
+    
     pass
 
 # Funciones de consulta sobre el catálogo

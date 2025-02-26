@@ -1,3 +1,5 @@
+import csv
+
 def new_list():
     newlist = {
         'elements': [],
@@ -103,6 +105,26 @@ def sub_list(lista, start, end):
             "size": end - start
         }
     return None
+
+def load_list(lista, filename):
+    """Carga un set a partir de un archivo csv
+
+    :param my_set: Set al que se le agregaran los elementos
+    :type my_set: set
+    :param filename: Nombre del archivo csv
+    :type filename: str
+
+    :returns: Set con los elementos cargados
+    :rtype: set
+    """
+    if (lista is not None and filename is not None):
+        input_file = csv.DictReader(open(filename, encoding="utf-8"),
+                                    delimiter=",")
+        for line in input_file:
+            i = 0
+            insert_element(lista, i, line)
+            i += 1
+    return lista
 
 
 
