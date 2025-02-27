@@ -1,6 +1,6 @@
 import sys
 import logic as log
-
+from App import logic
 default_time = 1000
 
 sys.setrecursionlimit(default_time*10)
@@ -10,6 +10,11 @@ def new_logic():
         Se crea una instancia del controlador
     """
     #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
+    catalog = logic.new_logic()
+    
+    return catalog
+    
+    
     pass
 
 def print_menu():
@@ -25,15 +30,35 @@ def print_menu():
     print("9- Ejecutar Requerimiento 8 (Bono)")
     print("0- Salir")
 
-def load_data(control):
+def load_data(control, filesize):
     """
     Carga los datos
     """
     #TODO: Realizar la carga de datos
     
-    control = log.new_logic()
+    if filesize == 1:
+        path = "20"
     
-    return control
+    elif filesize == 2:
+        path = "40"
+    
+    elif filesize == 3:
+        path = "60"
+    
+    elif filesize == 4:
+        path = "80"
+        
+    elif filesize == 5:
+        path = "100"
+    else:
+        raise Exception ("archivo no existente")
+    
+    data = logic.load_data(control, path)
+    
+    return data
+
+
+
 
 
 def print_data(control, id):
@@ -126,8 +151,15 @@ def main():
         print_menu()
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs) == 1:
+            print("Seleccione cuanta informacion desea importar: \n")
+            print("Archivo 20%\n")
+            print("Archivo 40%\n")
+            print("Archivo 60%\n")
+            print("Archivo 80%\n")
+            print("Archivo 100%\n")
+            archivo = int(input())
             print("Cargando información de los archivos ....\n")
-            data = load_data(control)
+            data = load_data(control, archivo)
         elif int(inputs) == 2:
             print_req_1(control)
 

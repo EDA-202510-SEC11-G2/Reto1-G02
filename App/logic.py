@@ -58,16 +58,13 @@ def load_data(catalog, filename):
     """
     # TODO: Realizar la carga de datos
     
-    filename = 'agricultural-20.csv'
-    
-    for i in catalog:
-        elements = catalog[i]
-        element_file = os.path.join(data_dir, filename)
-        catalog[i] = lt.load_list(elements, element_file, i)
+    with open("Data/agricultural-" + filename + ".csv", newline=",", encoding="utf-8") as csvfile:
+        datos = csv.DictReader(csvfile)
         
-    return catalog   
+        for elemento in datos:
+            lt.add_last(catalog["dato_agricultural"], elemento)
     
-    pass
+    
 
 # Funciones de consulta sobre el catálogo
 
