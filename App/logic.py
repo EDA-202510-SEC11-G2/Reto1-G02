@@ -1,12 +1,15 @@
 import time
 import csv
 import os 
-from DataStructures import array_list as lt
+from DataStructures.List import array_list as lt
+from DataStructures.List import single_linked_list as sl
+from DataStructures.Queue import queue as queue
+from DataStructures import Stack as st
 
 
 csv.field_size_limit(2147483647)
 
-data_dir = os.path.dirname(os.path.realpath('file')) + '/Data/' + '/agricultural-20.csv'
+data_dir = os.path.dirname(os.path.realpath(__file__)) + '/Data/' + '/agricultural-20.csv'
 
 
 def new_logic():
@@ -55,12 +58,14 @@ def load_data(catalog, filename):
     """
     # TODO: Realizar la carga de datos
     
+    filename = 'agricultural-20.csv'
+    
     for i in catalog:
         elements = catalog[i]
         element_file = os.path.join(data_dir, filename)
-        catalog[i] = lt.load_list(elements, element_file)
+        catalog[i] = lt.load_list(elements, element_file, i)
         
-    return elements   
+    return catalog   
     
     pass
 
@@ -74,10 +79,18 @@ def get_data(catalog, id):
     pass
 
 
-def req_1(catalog):
+def req_1(catalog, anio_interes):
     """
     Retorna el resultado del requerimiento 1
     """
+    
+    last_date = -10000
+    
+    for i in catalog["year_collection"]:
+        if i == anio_interes:
+            catalog["load_time"][i]
+    
+    
     # TODO: Modificar el requerimiento 1
     pass
 

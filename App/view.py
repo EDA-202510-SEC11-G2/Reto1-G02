@@ -1,4 +1,5 @@
 import sys
+import logic as log
 
 default_time = 1000
 
@@ -29,7 +30,10 @@ def load_data(control):
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    pass
+    
+    control = log.new_logic()
+    
+    return control
 
 
 def print_data(control, id):
@@ -44,6 +48,11 @@ def print_req_1(control):
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
+    
+    
+    
+    
+    
     pass
 
 
