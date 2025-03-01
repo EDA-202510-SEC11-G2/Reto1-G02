@@ -100,11 +100,42 @@ def req_2(catalog):
     pass
 
 
-def req_3(catalog):
+def req_3(catalog, departamento, anio_inicial, anio_final):
     """
     Retorna el resultado del requerimiento 3
     """
-    # TODO: Modificar el requerimiento 3
+    if not departamento or anio_inicial > anio_final:
+        return {"error"}
+    
+    registros_filtrados = [
+        for r in catalog["registros"]
+        if r.departamento.strip().upper() == departamento.strip().upper()
+        and start_year <= r.año_recopilacion <= end_year 
+        ]
+    
+    conteo = {"SURVEY": 0, "CENSUS": 0}
+    for i in registros_filtrados
+    if i.tipo_fuente in conteo:
+        conteo[r.tipo_fuente] += 1
+
+    survey = conteo["SURVEY"]
+    census = conteo["CENSUS"]
+    
+    registros_mostrados = registros_filtrados
+    if len(registros_filtrados) > 20:
+        registros_mostrados = registros_filtrados[:5] + registros_filtrados[-5:]
+
+    datos = []
+    for r in registros_mostrados:
+       registro_nuevo = {
+        "fuente": r.tipo_fuente,
+        "año": r.año_recopilacion,
+        "carga": r.fecha_carga,  
+        "producto": r.producto
+        }
+        
+    datos.append(registro_nuevo)
+    
     pass
 
 
