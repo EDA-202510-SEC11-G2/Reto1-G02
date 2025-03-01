@@ -136,9 +136,7 @@ def req_3(catalog, departamento, anio_inicial, anio_final):
         
     datos.append(registro_nuevo)
     
-    pass
-
-
+    
 def req_4(catalog):
     """
     Retorna el resultado del requerimiento 4
