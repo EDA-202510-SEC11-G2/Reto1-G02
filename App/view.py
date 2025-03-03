@@ -1,5 +1,5 @@
 import sys
-import logic as log
+from DataStructures.List import array_list as lt
 from App import logic
 default_time = 1000
 
@@ -51,14 +51,17 @@ def load_data(control, filesize):
     elif filesize == 5:
         path = "100"
     else:
-        raise Exception ("archivo no existente")
+        raise Exception ("Opcion Invalida")
     
     data = logic.load_data(control, path)
     
     return data
 
 
-
+def print_size_registros(control):
+    size = lt.size(control["data_agricultura"])
+    
+    return f"Se cargaron {size} registros del archivo seleccionado"
 
 
 def print_data(control, id):
@@ -68,16 +71,12 @@ def print_data(control, id):
     #TODO: Realizar la función para imprimir un elemento
     pass
 
-def print_req_1(control):
+def print_req_1(control, anio_interes):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
-    
-    
-    
-    
-    
+    data_encontrada = logic.req_1(control, anio_interes)
     pass
 
 
@@ -152,16 +151,19 @@ def main():
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs) == 1:
             print("Seleccione cuanta informacion desea importar: \n")
-            print("Archivo 20%\n")
-            print("Archivo 40%\n")
-            print("Archivo 60%\n")
-            print("Archivo 80%\n")
-            print("Archivo 100%\n")
+            print("1. Archivo 20%\n")
+            print("2. Archivo 40%\n")
+            print("3. Archivo 60%\n")
+            print("4. Archivo 80%\n")
+            print("5. Archivo 100%\n")
             archivo = int(input())
-            print("Cargando información de los archivos ....\n")
             data = load_data(control, archivo)
+            print("Cargando información de los archivos ....\n")
+            print(print_size_registros(data))
+            
         elif int(inputs) == 2:
-            print_req_1(control)
+            anio_interes = input("Ingrese el anio de interes: ")
+            print_req_1(control, anio_interes)
 
         elif int(inputs) == 3:
             print_req_2(control)

@@ -12,7 +12,7 @@ def get_element (my_list, index):
     
     return my_list["elements"][index]
 
-def is_present(my_list, element, cmp_function):
+def is_present(my_list, element):
     
     size = my_list["size"]
     if size > 0:
@@ -106,7 +106,26 @@ def sub_list(lista, start, end):
         }
     return None
 
+def last_element(my_list):
+    
+    if my_list["size"] == 0:
+        
+        raise Exception('IndexError: list index out of range')
+    
+    return my_list["elements"][my_list["size"] - 1]
 
+def cmp_function(element1, element2):
+    
+    if element1 > element2: #caso_1 (mayor que)
+        return 1
+    
+    elif element1 < element2: #caso_2 (menor que)
+        
+        return -1
+    
+    else: #caso_3 (iguales)
+        
+        return 0
 
 
 
