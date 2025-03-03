@@ -18,35 +18,14 @@ def new_logic():
     """
     #TODO: Llama a las funciónes de creación de las estructuras de datos
     
-    catalog = {
-        "source": None,
-        "commodity": None,
-        "statical_category": None,
-        "unit_measurement": None,
-        "state_name": None,
-        "location": None,
-        "year_collection": None,
-        "freq_collection": None,
-        "reference_period":None,
-        "load_time": None,
-        "value": None,
-        
-    }
+    catalog = {}
     
-    catalog["source"] = lt.new_list()
-    catalog["commodity"] = lt.new_list()
-    catalog["statical_category"] = lt.new_list()
-    catalog["unit_measurement"] = lt.new_list()
-    catalog["state_name"] = lt.new_list()
-    catalog["location"] = lt.new_list()
-    catalog["year_collection"] = lt.new_list()
-    catalog["freq_collection"] = lt.new_list()
-    catalog["reference_period"] = lt.new_list()
-    catalog["load_time"] = lt.new_list()
-    catalog["value"] = lt.new_list()
+    catalog["data_agricultura"] = lt.new_list()
+    catalog["anios_agricultura"] = lt.new_list()
+    catalog["departamentos_agricultura"] = lt.new_list()
     
-
     return catalog
+    
     
 
 
@@ -58,11 +37,38 @@ def load_data(catalog, filename):
     """
     # TODO: Realizar la carga de datos
     
-    with open("Data/agricultural-" + filename + ".csv", newline=",", encoding="utf-8") as csvfile:
+    with open("Data/agricultural-" + filename + ".csv", newline="", encoding="utf-8") as csvfile:
         datos = csv.DictReader(csvfile)
         
         for elemento in datos:
-            lt.add_last(catalog["dato_agricultural"], elemento)
+            lt.add_last(catalog["data_agricultura"], elemento)
+    
+    return catalog
+
+def load_anios(catalog):
+    
+    datos_completos = catalog["data_agricultura"]
+    
+    datos_aux = lt.new_list()
+    
+    for diccionario in datos_completos["elements"]:
+        anio = str(diccionario["coleccion_anio"])
+        pos = lt.is_present(datos_aux, anio)
+        if pos == -1:
+            lt.add_last(datos_aux, anio)
+            data_de_anio = lt.new_list()
+            lt.add_last(data_de_anio, diccionario)
+            lt.add_last(catalog["anios_agricultura"], data_de_anio)
+        else: 
+            lt_anio_seleccionado = lt.get_element(catalog["anios_agricultura"], pos)
+            lt.add_last(lt_anio_seleccionado, diccionario)
+            
+    lt.add_first(catalog["anios_agricultura"], datos_aux)
+    
+    return catalog
+        
+        
+    
     
     
 
@@ -81,14 +87,18 @@ def req_1(catalog, anio_interes):
     Retorna el resultado del requerimiento 1
     """
     
-    last_date = -10000
+    lt_anios_agricultura = catalog["anios_agricultura"]
+    datos_aux = lt.remove_first(lt_anios_agricultura)
+    pos = lt.is_present(datos_aux, anio_interes)
     
-    for i in catalog["year_collection"]:
-        if i == anio_interes:
-            catalog["load_time"][i]
+    if pos != -1:
+        lt_anio = lt.get_element(lt_anios_agricultura, pos)
+        elemento = lt.last_element(lt_anio)
+        return elemento
+    else:
+        return "No se logro encontrar informacion del año seleccionado"
     
     
-    # TODO: Modificar el requerimiento 1
     pass
 
 
