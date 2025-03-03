@@ -98,53 +98,55 @@ def req_1(catalog, anio_interes):
     else:
         return "No se logro encontrar informacion del año seleccionado"
     
-    
-    pass
-
-
-def req_2(catalog):
-    """
-    Retorna el resultado del requerimiento 2
-    """
-    # TODO: Modificar el requerimiento 2
-    pass
 
 
 def req_3(catalog, departamento, anio_inicial, anio_final):
     """
     Retorna el resultado del requerimiento 3
     """
+    
     if not departamento or anio_inicial > anio_final:
-        return {"error"}
-    
-    registros_filtrados = [
-        for r in catalog["registros"]
-        if r.departamento.strip().upper() == departamento.strip().upper()
-        and start_year <= r.año_recopilacion <= end_year 
-        ]
-    
+        return {"error": "Parámetros inválidos"}
+
+    lt_registros = catalog["data_agricultura"]
+
+    registros_filtrados = lt.new_list()
+    for r in lt_registros["elements"]:
+        if (r["departamento"].strip().upper() == departamento.strip().upper() and
+            anio_inicial <= int(r["coleccion_anio"]) <= anio_final):
+            lt.add_last(registros_filtrados, r)
+
     conteo = {"SURVEY": 0, "CENSUS": 0}
-    for i in registros_filtrados
-    if i.tipo_fuente in conteo:
-        conteo[r.tipo_fuente] += 1
+    for r in registros_filtrados["elements"]:
+        if r["tipo_fuente"] in conteo:
+            conteo[r["tipo_fuente"]] += 1
 
-    survey = conteo["SURVEY"]
-    census = conteo["CENSUS"]
-    
-    registros_mostrados = registros_filtrados
-    if len(registros_filtrados) > 20:
-        registros_mostrados = registros_filtrados[:5] + registros_filtrados[-5:]
+    if lt.size(registros_filtrados) > 20:
+        primeros_5 = lt.sub_list(registros_filtrados, 1, 5)
+        ultimos_5 = lt.sub_list(registros_filtrados, lt.size(registros_filtrados) - 4, 5)
+        registros_mostrados = lt.concatenate(primeros_5, ultimos_5)
+    else:
+        registros_mostrados = registros_filtrados
 
-    datos = []
-    for r in registros_mostrados:
-       registro_nuevo = {
-        "fuente": r.tipo_fuente,
-        "año": r.año_recopilacion,
-        "carga": r.fecha_carga,  
-        "producto": r.producto
+    datos = lt.new_list()
+    for r in registros_mostrados["elements"]:
+        registro_nuevo = {
+            "fuente": r["tipo_fuente"],
+            "año": r["coleccion_anio"],
+            "carga": r["fecha_carga"],
+            "frecuencia": r["frecuencia"],
+            "producto": r["producto"],
+            "unidad_medicion": r["unidad_medicion"]
         }
-        
-    datos.append(registro_nuevo)
+        lt.add_last(datos, registro_nuevo)
+
+    return {
+        "tiempo_ejecucion": "milisegundos",  
+        "total_registros": lt.size(registros_filtrados),
+        "total_survey": conteo["SURVEY"],
+        "total_census": conteo["CENSUS"],
+        "registros": datos["elements"]
+    }
     
     
 def req_4(catalog):
