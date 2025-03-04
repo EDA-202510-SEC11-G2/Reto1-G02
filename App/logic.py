@@ -43,6 +43,9 @@ def load_data(catalog, filename):
         for elemento in datos:
             lt.add_last(catalog["data_agricultura"], elemento)
     
+    catalog = load_anios(catalog)
+    catalog = load_departamentos(catalog)
+    
     return catalog
 
 def load_anios(catalog):
@@ -52,7 +55,7 @@ def load_anios(catalog):
     datos_aux = lt.new_list()
     
     for diccionario in datos_completos["elements"]:
-        anio = str(diccionario["coleccion_anio"])
+        anio = str(diccionario["year_collection"])
         pos = lt.is_present(datos_aux, anio)
         if pos == -1:
             lt.add_last(datos_aux, anio)
@@ -66,11 +69,30 @@ def load_anios(catalog):
     lt.add_first(catalog["anios_agricultura"], datos_aux)
     
     return catalog
-        
-        
     
+
+def load_departamentos(catalog):
     
+    datos_completos = catalog["data_agricultura"]
     
+    datos_aux = lt.new_list()
+    
+    for diccionario in datos_completos["elements"]:
+        departamento = str(diccionario["state_name"])
+        pos = lt.is_present(datos_aux, departamento)
+        if pos == -1:
+            lt.add_last(datos_aux, departamento)
+            data_de_departamento = lt.new_list()
+            lt.add_last(data_de_departamento, diccionario)
+            lt.add_last(catalog["departamentos_agricultura"], data_de_departamento)
+        else: 
+            lt_departamento_seleccionado = lt.get_element(catalog["departamentos_agricultura"], pos)
+            lt.add_last(lt_departamento_seleccionado, diccionario)
+            
+    lt.add_first(catalog["departamentos_agricultura"], datos_aux)
+    
+    return catalog
+
 
 # Funciones de consulta sobre el catálogo
 
@@ -86,7 +108,7 @@ def req_1(catalog, anio_interes):
     """
     Retorna el resultado del requerimiento 1
     """
-    
+    tiempo_inicial = get_time()
     lt_anios_agricultura = catalog["anios_agricultura"]
     datos_aux = lt.remove_first(lt_anios_agricultura)
     pos = lt.is_present(datos_aux, anio_interes)
@@ -94,7 +116,9 @@ def req_1(catalog, anio_interes):
     if pos != -1:
         lt_anio = lt.get_element(lt_anios_agricultura, pos)
         elemento = lt.last_element(lt_anio)
-        return elemento
+        tiempo_final = get_time()
+        tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
+        return elemento,
     else:
         return "No se logro encontrar informacion del año seleccionado"
     
@@ -102,20 +126,82 @@ def req_1(catalog, anio_interes):
     pass
 
 
-def req_2(catalog):
+def req_2(catalog, departamento_interes):
     """
     Retorna el resultado del requerimiento 2
     """
     # TODO: Modificar el requerimiento 2
-    pass
+    
+    
+    lt_departamentos_agricultura = catalog["departamentos_agricultura"]
+    datos_aux = lt.remove_first(lt_departamentos_agricultura)
+    pos = lt.is_present(datos_aux, departamento_interes)
+    
+    if pos != -1:
+        lt_anio = lt.get_element(lt_departamentos_agricultura, pos)
+        elemento = lt.last_element(lt_anio)
+        return elemento
+    else:
+        return "No se logro encontrar informacion del departamento seleccionado"
+    
+    
 
 
-def req_3(catalog):
-    """
-    Retorna el resultado del requerimiento 3
-    """
-    # TODO: Modificar el requerimiento 3
-    pass
+def req_3(catalog, departamento, anio_inicial, anio_final):
+    
+    # esto para revisar si los parametros estan 
+    if not departamento or anio_inicial > anio_final:
+        raise Exception ("Error, parametros invalidos")
+    
+    # aca se obtiene la lista del catalogo de registros
+    lt_registros = catalog["departamentos_agricultura"]
+    
+    datos_aux = lt.remove_first(lt_registros)
+#se obtiene los registros filtrados por departamenbto y anio en rangos 
+    registros_filtrados = lt.new_list()
+    for r in datos_aux["elements"]:
+        if (r.strip().upper() == departamento.strip().upper() and
+            anio_inicial <= int(r["coleccion_anio"]) <= anio_final):
+            lt.add_last(registros_filtrados, r)
+            
+#  se contea por tipo de fuente 
+    conteo = {"SURVEY": 0, "CENSUS": 0}
+    for r in registros_filtrados["elements"]:
+        if r["source"] in conteo:
+            conteo[r["source"]] += 1
+            
+#aca es para que se muestre  solamento los primeros 5 y los ultimos 5 registros 
+    if lt.size(registros_filtrados) > 20:
+        primeros_5 = lt.sub_list(registros_filtrados, 1, 5)
+        ultimos_5 = lt.sub_list(registros_filtrados, lt.size(registros_filtrados) - 4, 5)
+        registros_mostrados = lt.concatenate(primeros_5, ultimos_5)
+    else:
+        registros_mostrados = registros_filtrados
+        
+#prepara los datos para la muestra
+    datos = lt.new_list()
+    for r in registros_mostrados["elements"]:
+        registro_nuevo = {
+            "fuente": r["source"],
+            "año": r["year_collection"],
+            "carga": r["load_time"],
+            "frecuencia": r["freq_collection"],
+            "producto": r["commodity"],
+            "unidad_medicion": r["unit_measurement"]
+        }
+        lt.add_last(datos, registro_nuevo)
+        
+#retorna resultados 
+    return {
+        "tiempo_ejecucion": "milisegundos",
+        "total_registros": lt.size(registros_filtrados),
+        "total_survey": conteo["SURVEY"],
+        "total_census": conteo["CENSUS"],
+        "registros": datos["elements"]
+    }
+
+
+
 
 
 def req_4(catalog):
