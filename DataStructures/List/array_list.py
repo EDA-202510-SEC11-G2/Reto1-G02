@@ -14,17 +14,18 @@ def get_element (my_list, index):
 
 def is_present(my_list, element):
     
-    size = my_list["size"]
-    if size > 0:
-        keyexist = False
-        for keypos in range(0, size):
-            info = my_list["elements"][keypos]
-            if cmp_function(element, info) == 0:
-                keyexist = True
-                break
-        if keyexist:
-            return keypos
+    if my_list["size"] == 0:
+        return -1
+    
+    for i in range(0, my_list["size"]):
+        if i == element:
+            return i
+        
     return -1
+        
+    
+    
+    
 
     
 def add_first(lista, elemento):

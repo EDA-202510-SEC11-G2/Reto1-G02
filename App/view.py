@@ -77,30 +77,42 @@ def print_req_1(control, anio_interes):
     """
     # TODO: Imprimir el resultado del requerimiento 1
     data_encontrada = logic.req_1(control, anio_interes)
+    print(data_encontrada)
     pass
 
 
-def print_req_2(control):
+def print_req_2(control, departamento_interes):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    data_encontrada = logic.req_2(control, departamento_interes)
+    
+    print(data_encontrada)
+    
 
 
-def print_req_3(control):
+def print_req_3(control, departamento_interes, anio_inicial, anio_final):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    
+    data_encontrada = logic.req_3(control, departamento_interes, anio_inicial, anio_final)
+    
+    print(data_encontrada)
+    
 
 
-def print_req_4(control):
+def print_req_4(control, producto_interes, anio_inicial, anio_final):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 4
+    
+    data_encontrada = logic.req_4(control, producto_interes, anio_inicial, anio_final)
+    
+    print(data_encontrada)
     pass
 
 
@@ -112,12 +124,16 @@ def print_req_5(control):
     pass
 
 
-def print_req_6(control):
+def print_req_6(control, departamento_interes, fecha_inicial, fecha_final):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    
+    data_encontrada = logic.req_6(control, departamento_interes, fecha_inicial, fecha_final)
+    
+    print(data_encontrada)
+
 
 
 def print_req_7(control):
@@ -125,7 +141,12 @@ def print_req_7(control):
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    
+    
+    data_encontrada = logic.req_7(control, departamento_interes, anio_inicial, anio_final)
+    
+    print(data_encontrada)
+
 
 
 def print_req_8(control):
@@ -166,22 +187,42 @@ def main():
             print_req_1(control, anio_interes)
 
         elif int(inputs) == 3:
-            print_req_2(control)
+            departamento_interes = input("Ingresa el departamento de interes: ")
+            print_req_2(control, departamento_interes)
 
         elif int(inputs) == 4:
-            print_req_3(control)
+            departamento_interes = input("Ingrese el departamento de interes: ")
+            anio_inicial = int(input("Ingrese el año inicial: "))
+            anio_final = int(input("Ingrese el año final: "))
+            
+            print_req_3(control, departamento_interes, anio_inicial, anio_final)
 
         elif int(inputs) == 5:
-            print_req_4(control)
+            producto_interes = input("Ingrese el producto de interes: ")
+            anio_inicial = int(input("Ingrese el año inicial: "))
+            anio_final = int(input("Ingrese el año final: "))
+            
+            print_req_4(control, producto_interes, anio_inicial, anio_final)
+        
 
         elif int(inputs) == 6:
             print_req_5(control)
+    
 
         elif int(inputs) == 7:
-            print_req_6(control)
+            departamento_interes = input("Ingrese el departamento de interes: ")
+            fecha_inicial = input("Ingrese la fecha inicial (YYYY-MM-DD): ")
+            fecha_final = input("Ingrese la fecha final (YYYY-MM-DD): ")
+            
+            print_req_6(control, departamento_interes, fecha_inicial, fecha_final)
 
         elif int(inputs) == 8:
-            print_req_7(control)
+            departamento_interes = input("Ingrese el departamento de interes: ")
+            anio_inicial = int(input("Ingrese el año inicial: "))
+            anio_final = int(input("Ingrese el año final: "))
+            
+            print_req_7(control, departamento_interes, anio_inicial, anio_final)
+            
 
         elif int(inputs) == 9:
             print_req_8(control)
