@@ -145,8 +145,6 @@ def req_2(catalog, departamento_interes):
         return "No se logro encontrar informacion del departamento seleccionado"
     
     
-
-
 def req_3(catalog, departamento, anio_inicial, anio_final):
     
     # esto para revisar si los parametros estan 
@@ -155,13 +153,16 @@ def req_3(catalog, departamento, anio_inicial, anio_final):
     
     # aca se obtiene la lista del catalogo de registros
     lt_registros = catalog["departamentos_agricultura"]
-    
     datos_aux = lt.remove_first(lt_registros)
-#se obtiene los registros filtrados por departamenbto y anio en rangos 
+    pos = lt.is_present(datos_aux, departamento)
+    
+    if pos != -1:
+        lt_anio = lt.get_element(lt_registros, pos)
+
+#se obtiene los registros filtrados por departamento y anio en rangos 
     registros_filtrados = lt.new_list()
-    for r in datos_aux["elements"]:
-        if (r.strip().upper() == departamento.strip().upper() and
-            anio_inicial <= int(r["coleccion_anio"]) <= anio_final):
+    for r in lt_anio:
+        if (anio_inicial <= int(r["year_collection"]) <= anio_final):
             lt.add_last(registros_filtrados, r)
             
 #  se contea por tipo de fuente 
@@ -199,7 +200,6 @@ def req_3(catalog, departamento, anio_inicial, anio_final):
         "total_census": conteo["CENSUS"],
         "registros": datos["elements"]
     }
-
 
 
 
