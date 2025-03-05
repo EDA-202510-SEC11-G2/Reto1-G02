@@ -227,12 +227,41 @@ def req_6(catalog):
     pass
 
 
-def req_7(catalog):
+def req_7(catalog, departamento, anio_inicial, anio_final):
     """
     Retorna el resultado del requerimiento 7
     """
-    # TODO: Modificar el requerimiento 7
-    pass
+    if not departamento or anio_inicial > anio_final:
+        raise Exception ("Error, parametros invalidos")
+    
+    lt_registros = catalog["departamentos_agricultura"]
+    datos_aux = lt.remove_first(lt_registros)
+    pos = lt.is_present(datos_aux, departamento)
+
+    ingresosmayores = 0
+    ingresosmenores = 0
+    if pos != -1:
+        lt_departamento = lt.get_element(lt_registros, pos)
+
+    registros_filtrados = lt.new_list()
+    for r in lt_departamento:
+        if (anio_inicial <= int(r["year_collection"]) <= anio_final):
+            lt.add_last(registros_filtrados, r)
+
+    registro_menor = None
+    registro_mayor = None
+
+    for r in registros_filtrados:
+        if  r["value"] > ingresosmayores :
+            ingresosmayores = r["value"]
+            registro_mayor = r
+        if r["value"] < ingresosmenores:
+            ingresosmenores = r["value"]
+            registro_menor = r
+
+    return registro_mayor, registro_menor
+
+    
 
 
 def req_8(catalog):
