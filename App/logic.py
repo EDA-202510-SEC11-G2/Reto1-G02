@@ -1,6 +1,7 @@
 import time
 import csv
 import os 
+from copy import deepcopy
 from DataStructures.List import array_list as lt
 from DataStructures.List import single_linked_list as sl
 from DataStructures.Queue import queue as queue
@@ -104,7 +105,9 @@ def req_1(catalog, anio_interes):
     Retorna el resultado del requerimiento 1
     """
     tiempo_inicial = get_time()
-    lt_anios_agricultura = catalog["anio_recoleccion"]
+    lt_anios_agricultura = deepcopy(catalog["fecha_carga"])
+    for i in range(len(lt_anios_agricultura['elements'])):
+        lt_anios_agricultura['elements'][i] = lt_anios_agricultura['elements'][i][:4]
     pos = lt.is_present(lt_anios_agricultura, anio_interes)
     
     if pos != -1:
@@ -425,5 +428,5 @@ def delta_time(start, end):
     """
     devuelve la diferencia entre tiempos de procesamiento muestreados
     """
-    elapsed = float(end - start)
+    elapsed = round(float(end - start), 3)
     return elapsed

@@ -118,7 +118,7 @@ def print_req_1(control, anio_interes):
     """
     # TODO: Imprimir el resultado del requerimiento 1
     data_encontrada = logic.req_1(control, anio_interes)
-    print(f'{data_encontrada[0]}\nTiempo de busqueda: {data_encontrada[1]}')
+    print(f'{data_encontrada[0]}\nTiempo de busqueda: {data_encontrada[1]}ms')
 
 
 def print_req_2(control, departamento_interes):
