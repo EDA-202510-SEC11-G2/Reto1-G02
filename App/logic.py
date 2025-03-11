@@ -20,11 +20,17 @@ def new_logic():
     
     catalog = {}
     
-    catalog["data_agricultura"] = lt.new_list()
-    catalog["anios_agricultura"] = lt.new_list()
-    catalog["departamentos_agricultura"] = lt.new_list()
-    catalog["productos_agricultura"] = lt.new_list()
-    catalog["fechas_agricultura"] = lt.new_list()
+    catalog["fuente"] = lt.new_list()
+    catalog["commodity"] = lt.new_list()
+    catalog["categoria_estadistica"] = lt.new_list()
+    catalog["unidad_medida"] = lt.new_list()
+    catalog["departamento"] = lt.new_list()
+    catalog["ubicacion"] = lt.new_list()
+    catalog["anio_recoleccion"] = lt.new_list()
+    catalog["freq_recoleccion"] = lt.new_list()
+    catalog["periodo_referencia"] = lt.new_list()
+    catalog["fecha_carga"] = lt.new_list()
+    catalog["valor"] = lt.new_list()
     
     return catalog
     
@@ -41,106 +47,47 @@ def load_data(catalog, filename):
     
     with open("Data/agricultural-" + filename + ".csv", newline="", encoding="utf-8") as csvfile:
         datos = csv.DictReader(csvfile)
+        num_columnas = len(datos.fieldnames)
         
-        for elemento in datos:
-            lt.add_last(catalog["data_agricultura"], elemento)
+        count = 0
+        min_anio = 9999
+        max_anio = 0
+        for registro in datos:
+            if count > 9:
+                break
+            print(f'{count} / 10')
+            for i in range(num_columnas):
+                if(i == 0):
+                    lt.add_last(catalog['fuente'], registro['source'])
+                elif(i == 1):
+                    lt.add_last(catalog['commodity'], registro['commodity'])
+                elif(i == 2):
+                    lt.add_last(catalog['categoria_estadistica'], registro['statical_category'])
+                elif(i == 3):
+                    lt.add_last(catalog['unidad_medida'], registro['unit_measurement'])
+                elif(i == 4):
+                    lt.add_last(catalog['departamento'], registro['state_name'])
+                elif(i == 5):
+                    lt.add_last(catalog['ubicacion'], registro['location'])
+                elif(i == 6):
+                    lt.add_last(catalog['anio_recoleccion'], registro['year_collection'])
+                    anio = int(registro['year_collection'])
+                    if anio > max_anio:
+                        max_anio = anio
+                    if anio < min_anio:
+                        min_anio = anio
+                elif(i == 7):
+                    lt.add_last(catalog['freq_recoleccion'], registro['freq_collection'])
+                elif(i == 8):
+                    lt.add_last(catalog['periodo_referencia'], registro['reference_period'])
+                elif(i == 9):
+                    lt.add_last(catalog['fecha_carga'], registro['load_time'])
+                elif(i == 10):
+                    lt.add_last(catalog['valor'], registro['value'])
+            count += 1
     
-    catalog = load_anios(catalog)
-    catalog = load_departamentos(catalog)
-    catalog = load_productos(catalog)
-    catalog = load_fechas(catalog)
-    
-    return catalog
+    return (catalog, (min_anio, max_anio))
 
-def load_anios(catalog):
-    
-    datos_completos = catalog["data_agricultura"]
-    
-    datos_aux = lt.new_list()
-    
-    for diccionario in datos_completos["elements"]:
-        anio = str(diccionario["year_collection"])
-        pos = lt.is_present(datos_aux, anio)
-        if pos == -1:
-            lt.add_last(datos_aux, anio)
-            data_de_anio = lt.new_list()
-            lt.add_last(data_de_anio, diccionario)
-            lt.add_last(catalog["anios_agricultura"], data_de_anio)
-        else: 
-            lt_anio_seleccionado = lt.get_element(catalog["anios_agricultura"], pos)
-            lt.add_last(lt_anio_seleccionado, diccionario)
-            
-    lt.add_first(catalog["anios_agricultura"], datos_aux)
-    
-    return catalog
-    
-
-def load_departamentos(catalog):
-    
-    datos_completos = catalog["data_agricultura"]
-    
-    datos_aux = lt.new_list()
-    
-    for diccionario in datos_completos["elements"]:
-        departamento = str(diccionario["state_name"])
-        pos = lt.is_present(datos_aux, departamento)
-        if pos == -1:
-            lt.add_last(datos_aux, departamento)
-            data_de_departamento = lt.new_list()
-            lt.add_last(data_de_departamento, diccionario)
-            lt.add_last(catalog["departamentos_agricultura"], data_de_departamento)
-        else: 
-            lt_departamento_seleccionado = lt.get_element(catalog["departamentos_agricultura"], pos)
-            lt.add_last(lt_departamento_seleccionado, diccionario)
-            
-    lt.add_first(catalog["departamentos_agricultura"], datos_aux)
-    
-    return catalog
-
-
-def load_productos(catalog):
-    datos_completos = catalog["data_agricultura"]
-    
-    datos_aux = lt.new_list()
-    
-    for diccionario in datos_completos["elements"]:
-        producto = str(diccionario["commodity"])
-        pos = lt.is_present(datos_aux, producto)
-        if pos == -1:
-            lt.add_last(datos_aux, producto)
-            data_de_producto = lt.new_list()
-            lt.add_last(data_de_producto, diccionario)
-            lt.add_last(catalog["productos_agricultura"], data_de_producto)
-        else: 
-            lt_productos_seleccionado = lt.get_element(catalog["productos_agricultura"], pos)
-            lt.add_last(lt_productos_seleccionado, diccionario)
-            
-    lt.add_first(catalog["productos_agricultura"], datos_aux)
-    
-    return catalog
-
-def load_fechas(catalog):
-    datos_completos = catalog["data_agricultura"]
-    
-    datos_aux = lt.new_list()
-    
-    for diccionario in datos_completos["elements"]:
-        fecha = str(diccionario["load_time"])
-        pos = lt.is_present(datos_aux, fecha)
-        if pos == -1:
-            lt.add_last(datos_aux, fecha)
-            data_de_fecha = lt.new_list()
-            lt.add_last(data_de_fecha, diccionario)
-            lt.add_last(catalog["fechas_agricultura"], data_de_fecha)
-        else: 
-            lt_fecha_seleccionada = lt.get_element(catalog["fechas_agricultura"], pos)
-            lt.add_last(lt_fecha_seleccionada, diccionario)
-            
-    lt.add_first(catalog["fechas_agricultura"], datos_aux)
-    
-    return catalog
-    
-    
     
 # Funciones de consulta sobre el catálogo
 
@@ -157,13 +104,19 @@ def req_1(catalog, anio_interes):
     Retorna el resultado del requerimiento 1
     """
     tiempo_inicial = get_time()
-    lt_anios_agricultura = catalog["anios_agricultura"]
-    datos_aux = lt.remove_first(lt_anios_agricultura)
-    pos = lt.is_present(datos_aux, anio_interes)
+    lt_anios_agricultura = catalog["anio_recoleccion"]
+    pos = lt.is_present(lt_anios_agricultura, anio_interes)
     
     if pos != -1:
-        lt_anio = lt.get_element(lt_anios_agricultura, pos)
-        elemento = lt.last_element(lt_anio)
+        elemento = []
+        elemento.append(catalog['anio_recoleccion']['elements'][pos])
+        elemento.append(catalog['fecha_carga']['elements'][pos])
+        elemento.append(catalog['fuente']['elements'][pos])
+        elemento.append(catalog['freq_recoleccion']['elements'][pos])
+        elemento.append(catalog['departamento']['elements'][pos])
+        elemento.append(catalog['commodity']['elements'][pos])
+        elemento.append(catalog['unidad_medida']['elements'][pos])
+        elemento.append(catalog['valor']['elements'][pos])
         tiempo_final = get_time()
         tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
         return elemento, tiempo_ejecucion

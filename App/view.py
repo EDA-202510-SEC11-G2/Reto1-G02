@@ -15,7 +15,6 @@ def new_logic():
     return catalog
     
     
-    pass
 
 def print_menu():
     print("Bienvenido")
@@ -57,11 +56,53 @@ def load_data(control, filesize):
     
     return data
 
+def print_reporte_carga(catalogo, anio_menor_y_mayor):
+    print_size_registros(catalogo)
+    print(f'Menor año de recoleccion de registro: {anio_menor_y_mayor[0]}')
+    print(f'Mayor año de recoleccion de registro: {anio_menor_y_mayor[1]}')
+    primeros_registros = []
+    num_registros = len(catalogo['fuente']['elements'])
+    i = 0
+    while(i < num_registros and i < 5):
+        registro = []
+        registro.append(catalogo['anio_recoleccion']['elements'][i])
+        registro.append(catalogo['fecha_carga']['elements'][i])
+        registro.append(catalogo['departamento']['elements'][i])
+        registro.append(catalogo['fuente']['elements'][i])
+        registro.append(catalogo['unidad_medida']['elements'][i])
+        registro.append(catalogo['valor']['elements'][i])
+        primeros_registros.append(registro)
+        i += 1
+    
+    print('info de los primeros 5 registros:')
+    for r in primeros_registros:
+        print(r)
+        num_registros = len(catalogo['fuente']['elements'])
+
+
+    i = num_registros - 1
+    ultimos_registros = []
+    while(i > 0 and i > num_registros - 6):
+        registro = []
+        registro.append(catalogo['anio_recoleccion']['elements'][i])
+        registro.append(catalogo['fecha_carga']['elements'][i])
+        registro.append(catalogo['departamento']['elements'][i])
+        registro.append(catalogo['fuente']['elements'][i])
+        registro.append(catalogo['unidad_medida']['elements'][i])
+        registro.append(catalogo['valor']['elements'][i])
+        ultimos_registros.append(registro)
+        i -= 1
+    
+    print('info de los ultimos 5 registros:')
+    for r in ultimos_registros:
+        print(r)
+
+
+
 
 def print_size_registros(control):
-    size = lt.size(control["data_agricultura"])
-    
-    return f"Se cargaron {size} registros del archivo seleccionado"
+    size = lt.size(control["valor"])
+    print(f"Se cargaron {size} registros del archivo seleccionado")
 
 
 def print_data(control, id):
@@ -77,8 +118,7 @@ def print_req_1(control, anio_interes):
     """
     # TODO: Imprimir el resultado del requerimiento 1
     data_encontrada = logic.req_1(control, anio_interes)
-    print(data_encontrada)
-    pass
+    print(f'{data_encontrada[0]}\nTiempo de busqueda: {data_encontrada[1]}')
 
 
 def print_req_2(control, departamento_interes):
@@ -178,9 +218,9 @@ def main():
             print("4. Archivo 80%\n")
             print("5. Archivo 100%\n")
             archivo = int(input())
-            data = load_data(control, archivo)
             print("Cargando información de los archivos ....\n")
-            print(print_size_registros(data))
+            data, min_max_anios = load_data(control, archivo)
+            print_reporte_carga(data, min_max_anios)
             
         elif int(inputs) == 2:
             anio_interes = input("Ingrese el anio de interes: ")

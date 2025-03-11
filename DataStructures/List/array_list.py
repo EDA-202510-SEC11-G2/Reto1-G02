@@ -18,7 +18,7 @@ def is_present(my_list, element):
         return -1
     
     for i in range(0, my_list["size"]):
-        if i == element:
+        if my_list['elements'][i] == element:
             return i
         
     return -1
