@@ -127,8 +127,7 @@ def print_req_2(control, departamento_interes):
     """
     # TODO: Imprimir el resultado del requerimiento 2
     data_encontrada = logic.req_2(control, departamento_interes)
-    
-    print(data_encontrada)
+    print(f'{data_encontrada[0]}\nTiempo de busqueda: {data_encontrada[1]} ms')
     
 
 
@@ -160,7 +159,6 @@ def print_req_5(control):
     """
         Función que imprime la solución del Requerimiento 5 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 5
     pass
 
 
@@ -168,7 +166,6 @@ def print_req_6(control, departamento_interes, fecha_inicial, fecha_final):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 6
     
     data_encontrada = logic.req_6(control, departamento_interes, fecha_inicial, fecha_final)
     

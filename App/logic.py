@@ -1,10 +1,11 @@
 import time
 import csv
 import os 
+import datetime as dt
 from copy import deepcopy
 from DataStructures.List import array_list as lt
 from DataStructures.List import single_linked_list as sl
-from DataStructures.Queue import queue as queue
+
 from DataStructures import Stack as st
 
 
@@ -54,9 +55,8 @@ def load_data(catalog, filename):
         min_anio = 9999
         max_anio = 0
         for registro in datos:
-            if count > 9:
+            if count > 1000:
                 break
-            print(f'{count} / 10')
             for i in range(num_columnas):
                 if(i == 0):
                     lt.add_last(catalog['fuente'], registro['source'])
@@ -136,68 +136,59 @@ def req_2(catalog, departamento_interes):
     # TODO: Modificar el requerimiento 2
     
     tiempo_inicial = get_time()
-    
-    lt_departamentos_agricultura = catalog["departamentos_agricultura"]
-    datos_aux = lt.remove_first(lt_departamentos_agricultura)
-    pos = lt.is_present(datos_aux, departamento_interes)
+    lt_departamento = catalog["departamento"]
+    pos = lt.is_present(lt_departamento, departamento_interes)
     
     if pos != -1:
-        lt_anio = lt.get_element(lt_departamentos_agricultura, pos)
-        elemento = lt.last_element(lt_anio)
+        elemento = []
+        elemento.append(catalog['anio_recoleccion']['elements'][pos])
+        elemento.append(catalog['fecha_carga']['elements'][pos])
+        elemento.append(catalog['fuente']['elements'][pos])
+        elemento.append(catalog['freq_recoleccion']['elements'][pos])
+        elemento.append(catalog['departamento']['elements'][pos])
+        elemento.append(catalog['commodity']['elements'][pos])
+        elemento.append(catalog['unidad_medida']['elements'][pos])
+        elemento.append(catalog['valor']['elements'][pos])
         tiempo_final = get_time()
         tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
         return elemento, tiempo_ejecucion
     else:
-        return "No se logro encontrar informacion del departamento seleccionado"
-    
+        return "No se logro encontrar informacion del año seleccionado"
     
 def req_3(catalog, departamento, anio_inicial, anio_final):
-    # esto para revisar si los parametros estan
     tiempo_inicial = get_time()
     if not departamento or anio_inicial > anio_final:
         raise Exception ("Error, parametros invalidos")
-
-# aca se obtiene la lista del catalogo de registros
-    lt_registros = catalog["departamentos_agricultura"]
-    datos_aux = lt.remove_first(lt_registros)
-    pos = lt.is_present(datos_aux, departamento)
-
-    if pos != -1:
-        lt_anio = lt.get_element(lt_registros, pos)
-
-#se obtiene los registros filtrados por departamento y anio en rangos 
-    registros_filtrados = lt.new_list()
-    for r in lt_anio:
-        if (anio_inicial <= int(r["year_collection"]) <= anio_final):
-            lt.add_last(registros_filtrados, r)
-
-# se contea por tipo de fuente
-    conteo = {"SURVEY": 0, "CENSUS": 0}
-    for r in registros_filtrados["elements"]:
-        if r["source"] in conteo:
-            conteo[r["source"]] += 1
-
-# aca es para que se muestre  solamento los primeros 5 y los ultimos 5 registros 
-    if lt.size(registros_filtrados) > 20:
-        primeros_5 = lt.sub_list(registros_filtrados, 1, 5)
-        ultimos_5 = lt.sub_list(registros_filtrados, lt.size(registros_filtrados) - 4, 5)
-        registros_mostrados = primeros_5 + ultimos_5
-    else:
-        registros_mostrados = registros_filtrados
-# prepara los datos para la muestra
-    datos = lt.new_list()
-    for r in registros_mostrados["elements"]:
-        registro_nuevo = {
-            "fuente": r["source"],
-            "año": r["year_collection"],
-            "carga": r["load_time"],
-            "frecuencia": r["freq_collection"],
-            "producto": r["commodity"],
-            "unidad_medicion": r["unit_measurement"]
-        }
-        lt.add_last(datos, registro_nuevo)
-
-#retorna resultados 
+    
+    num_registros = len(catalog['valor']['elements'])
+    registros_filtrados = []
+    num_survey = 0
+    num_census = 0
+    for i in range(num_registros):
+        if (catalog['departamento']['elements'][i] == departamento
+            and int(catalog['anio_recoleccion']['elements'][i]) >= anio_inicial
+            and int(catalog['anio_recoleccion']['elements'][i]) <= anio_final):
+            if catalog['fuente']['elements'][i] == 'SURVEY':
+                num_survey += 1
+            else:
+                num_census +=1
+            elemento = []
+            elemento.append(catalog['fuente']['elements'][i])
+            elemento.append(catalog['anio_recoleccion']['elements'][i])
+            elemento.append(catalog['fecha_carga']['elements'][i])
+            elemento.append(catalog['freq_recoleccion']['elements'][i])
+            elemento.append(catalog['commodity']['elements'][i])
+            elemento.append(catalog['unidad_medida']['elements'][i])
+            registros_filtrados.append(elemento)
+    
+    
+    if len(registros_filtrados) > 20:
+        while len(registros_filtrados) > 10:
+            if registros_filtrados[5][0] == 'SURVEY':
+                num_survey -= 1
+            else:
+                num_census -= 1
+            registros_filtrados.pop(5)
 
     tiempo_final = get_time()
     tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
@@ -205,10 +196,10 @@ def req_3(catalog, departamento, anio_inicial, anio_final):
     
     return {
         "Tiempo_ejecucion": tiempo_ejecucion,
-        "total_registros": lt.size(registros_filtrados),
-        "total_survey": conteo["SURVEY"],
-        "total_census": conteo["CENSUS"],
-        "registros": datos["elements"]
+        "total_registros": len(registros_filtrados),
+        "num_survey" : num_survey,
+        "num_census" : num_census,
+        "registros": registros_filtrados
     }
     
     
@@ -220,148 +211,110 @@ def req_4(catalog, producto, anio_inicial, anio_final):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
     tiempo_inicial = get_time()
-   # esto para revisar si los parametros estan
     if not producto or anio_inicial > anio_final:
         raise Exception ("Error, parametros invalidos")
-
-# aca se obtiene la lista del catalogo de registros
-    lt_registros = catalog["departamentos_agricultura"]
-    datos_aux = lt.remove_first(lt_registros)
-    pos = lt.is_present(datos_aux, producto)
-
-    if pos != -1:
-        lt_anio = lt.get_element(lt_registros, pos)
-
-#se obtiene los registros filtrados por producto y anio en rangos 
-    registros_filtrados = lt.new_list()
-    for r in lt_anio:
-        if (anio_inicial <= int(r["year_collection"]) <= anio_final):
-            lt.add_last(registros_filtrados, r)
-
-# se contea por tipo de fuente
-    conteo = {"SURVEY": 0, "CENSUS": 0}
-    for r in registros_filtrados["elements"]:
-        if r["source"] in conteo:
-            conteo[r["source"]] += 1
-
-# aca es para que se muestre  solamento los primeros 5 y los ultimos 5 registros 
-    if lt.size(registros_filtrados) > 20:
-        primeros_5 = lt.sub_list(registros_filtrados, 1, 5)
-        ultimos_5 = lt.sub_list(registros_filtrados, lt.size(registros_filtrados) - 4, 5)
-        registros_mostrados = primeros_5 + ultimos_5
-    else:
-        registros_mostrados = registros_filtrados
-# prepara los datos para la muestra
-    datos = lt.new_list()
-    for r in registros_mostrados["elements"]:
-        registro_nuevo = {
-            "fuente": r["source"],
-            "año": r["year_collection"],
-            "carga": r["load_time"],
-            "frecuencia": r["freq_collection"],
-            "producto": r["commodity"],
-            "unidad_medicion": r["unit_measurement"]
-        }
-        lt.add_last(datos, registro_nuevo)
     
-    tiempo_final  = get_time()
-    tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
+    num_registros = len(catalog['valor']['elements'])
+    registros_filtrados = []
+    num_survey = 0
+    num_census = 0
+    for i in range(num_registros):
+        if (catalog['commodity']['elements'][i] == producto
+            and int(catalog['anio_recoleccion']['elements'][i]) >= anio_inicial
+            and int(catalog['anio_recoleccion']['elements'][i]) <= anio_final):
+            if catalog['fuente']['elements'][i] == 'SURVEY':
+                num_survey += 1
+            else:
+                num_census +=1
+            elemento = []
+            elemento.append(catalog['fuente']['elements'][i])
+            elemento.append(catalog['anio_recoleccion']['elements'][i])
+            elemento.append(catalog['fecha_carga']['elements'][i])
+            elemento.append(catalog['freq_recoleccion']['elements'][i])
+            elemento.append(catalog['departamento']['elements'][i])
+            elemento.append(catalog['unidad_medida']['elements'][i])
+            registros_filtrados.append(elemento)
+    
+    
+    if len(registros_filtrados) > 20:
+        while len(registros_filtrados) > 10:
+            if registros_filtrados[5][0] == 'SURVEY':
+                num_survey -= 1
+            else:
+                num_census -= 1
+            registros_filtrados.pop(5)
 
-#retorna resultados 
-
-    return {
-        "Tiempo_ejecucion": tiempo_ejecucion,
-        "total_registros": lt.size(registros_filtrados),
-        "total_survey": conteo["SURVEY"],
-        "total_census": conteo["CENSUS"],
-        "registros": datos["elements"]
-    }
-
-
-
-def req_5(catalog):
-    """
-    Retorna el resultado del requerimiento 5
-    """
-    # TODO: Modificar el requerimiento 5
-    pass
-
-def req_6(catalog, departamento, fecha_inicial, fecha_final):
-    """
-    Retorna el resultado del requerimiento 6
-    """
-    # TODO: Modificar el requerimiento 6
-    
-    tiempo_inicial = get_time()
-    
-    fecha_inicial = fecha_inicial.split("-")
-    fecha_final = fecha_final.split("-")
-    
-    fecha_inicial = int(fecha_inicial[0] + fecha_inicial[1] + fecha_inicial[2])
-    fecha_final = int(fecha_final[0] + fecha_final[1] + fecha_final[2])
-
-    fecha_mayor = False
-
-    if not departamento or fecha_inicial > fecha_final:
-        raise Exception ("Error, parametros invalidos")
-        
-    lt_registros = catalog["departamentos_agricultura"]
-    datos_aux = lt.remove_first(lt_registros)
-    pos = lt.is_present(datos_aux, departamento)
-    
-    if pos != -1:
-        lt_fecha = lt.get_element(lt_registros, pos)
-        
-    registros_filtrados = lt.new_list()
-    
-    for r in lt_fecha:
-        
-        fecha = r["load_time"].split("-")
-        fecha = int(fecha[0] + fecha[1] + fecha[2])
-        
-        
-        if (fecha_inicial <= fecha <= fecha_final):
-            lt.add_last(registros_filtrados, r)
-    
-    conteo = {"SURVEY": 0, "CENSUS": 0}
-    for r in registros_filtrados["elements"]:
-        if r["source"] in conteo:
-            conteo[r["source"]] += 1
-            
-    
-    if lt.size(registros_filtrados) > 20:
-        primeros_5 = lt.sub_list(registros_filtrados, 1, 5)
-        ultimos_5 = lt.sub_list(registros_filtrados, lt.size(registros_filtrados) - 4, 5)
-        registros_mostrados = primeros_5 + ultimos_5
-    else:
-        registros_mostrados = registros_filtrados
-    
-    datos = lt.new_list()
-    
-    for r in registros_mostrados["elements"]:
-        registro_nuevo = {
-            "fuente": r["source"],
-            "año": r["year_collection"],
-            "carga": r["load_time"],
-            "frecuencia": r["freq_collection"],
-            "producto": r["commodity"],
-            "unidad_medicion": r["unit_measurement"]
-        }
-        lt.add_last(datos, registro_nuevo)
-    
     tiempo_final = get_time()
     tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
     
+    
     return {
         "Tiempo_ejecucion": tiempo_ejecucion,
-        "total_registros": lt.size(registros_filtrados),
-        "total_survey": conteo["SURVEY"],
-        "total_census": conteo["CENSUS"],
-        "registros": datos["elements"]
+        "total_registros": len(registros_filtrados),
+        "num_survey" : num_survey,
+        "num_census" : num_census,
+        "registros": registros_filtrados
     }
+
+
+
+def req_6(catalog, departamento, fecha_inicial: str, fecha_final:str):
+    """
+    Retorna el resultado del requerimiento 6
+    """
+    tiempo_inicial = get_time()
+    y1, m1, d1 = [int(x) for x in fecha_inicial.split('-')]
+    anio_inicial = dt.datetime(y1, m1, d1)
+    y2, m2, d2 = [int(x) for x in fecha_final.split('-')]
+    anio_final = dt.datetime(y2, m2, d2)
+    if not departamento or anio_inicial > anio_final:
+        raise Exception ("Error, parametros invalidos")
     
+    num_registros = len(catalog['valor']['elements'])
+    registros_filtrados = []
+    num_survey = 0
+    num_census = 0
+    for i in range(num_registros):
+        string = catalog['fecha_carga']['elements'][i][:10]
+        y1, m1, d1 = [int(x) for x in string.split('-')]
+        fecha = dt.datetime(y1, m1, d1)
+        if (catalog['departamento']['elements'][i] == departamento
+            and fecha >= anio_inicial
+            and fecha <= anio_final):
+            if catalog['fuente']['elements'][i] == 'SURVEY':
+                num_survey += 1
+            else:
+                num_census +=1
+            elemento = []
+            elemento.append(catalog['fuente']['elements'][i])
+            elemento.append(catalog['anio_recoleccion']['elements'][i])
+            elemento.append(catalog['fecha_carga']['elements'][i])
+            elemento.append(catalog['freq_recoleccion']['elements'][i])
+            elemento.append(catalog['departamento']['elements'][i])
+            elemento.append(catalog['unidad_medida']['elements'][i])
+            registros_filtrados.append(elemento)
+    
+    
+    if len(registros_filtrados) > 20:
+        while len(registros_filtrados) > 10:
+            if registros_filtrados[0] == 'SURVEY':
+                num_survey -= 1
+            else:
+                num_census -= 1
+            registros_filtrados.pop(5)
+
+    tiempo_final = get_time()
+    tiempo_ejecucion = delta_time(tiempo_inicial, tiempo_final)
+    
+    
+    return {
+        "Tiempo_ejecucion": tiempo_ejecucion,
+        "total_registros": len(registros_filtrados),
+        "num_survey" : num_survey,
+        "num_census" : num_census,
+        "registros": registros_filtrados
+    }
 
 
 
@@ -374,9 +327,8 @@ def req_7 (catalog, departamento, anio_inicial, anio_final):
     if not departamento or anio_inicial > anio_final:
         raise Exception ("Error, parametros invalidos")
     
-    lt_registros = catalog["departamentos_agricultura"]
-    datos_aux = lt.remove_first(lt_registros)
-    pos = lt.is_present(datos_aux, departamento)
+    lt_registros = catalog["departamentos"]
+    pos = lt.is_present(lt_registros, departamento)
 
     ingresosmayores = 0
     ingresosmenores = 0
